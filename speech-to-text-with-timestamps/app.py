@@ -39,26 +39,6 @@ pipe = pipeline(
 arabic_bad_Words = pd.read_csv("arabic_bad_words_dataset.csv")
 english_bad_Words = pd.read_csv("english_bad_words_dataset.csv")
 
-
-def load_audio(file: str, sr: int = 16000):
-    try:
-        # This reads the audio from the video file without creating a separate audio file
-        command = [
-            "ffmpeg",
-            "-i", file,
-            "-f", "s16le",
-            "-acodec", "pcm_s16le",
-            "-ar", str(sr),
-            "-ac", "1",
-            "-"
-        ]
-        
-        out = subprocess.run(command, capture_output=True, check=True).stdout
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
-    
-    return np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
-
 def clean_english_word(word):
     cleaned_text = re.sub(r'^[\s\W_]+|[\s\W_]+$', '', word)
     return cleaned_text.lower()
@@ -218,13 +198,22 @@ def transcribe_video(input_video, video_language, task, timestamp_type):
     return [text, timestamps, foul_words, temp_final_video_file.name, str(round(ending_time-starting_time, 2))+" seconds"]
 
 video_examples = [
-        ["video-clips/example-1.mp4", 'English', 'transcribe', 'word'],
-        ["video-clips/example-2.mp4", 'English', 'transcribe', 'word'],
-        ["video-clips/example-3.mp4", 'English', 'transcribe', 'word'],
-        ["video-clips/example-4.mp4", 'English', 'transcribe', 'word'],
-        ["video-clips/example-5.mp4", 'English', 'transcribe', 'word'],
-        ["video-clips/example-6.mp4", 'English', 'transcribe', 'word'],
-        ["video-clips/example-7.mp4", 'English', 'transcribe', 'word']
+        ["video-clips/sample_1.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_2.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_3.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_4.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_5.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_6.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_7.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_8.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_9.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_10.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_11.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_12.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_13.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_14.mp4", 'English', 'transcribe', 'word'],
+        ["video-clips/sample_15.mp4", 'English', 'transcribe', 'word'],
+
 ]
 audio_examples = [
         ["arabic_english_audios/audios/arabic_audio_11.mp3", 'Arabic', 'transcribe', 'word'],
@@ -291,7 +280,7 @@ with gr.Blocks(theme=gr.themes.Default()) as demo:
     with gr.Tab("Video"):
         with gr.Row():
             with gr.Column():
-                video_input = gr.Video(sources=["upload", 'webcam'], label="Video file")
+                video_input = gr.Video(sources=["upload", 'webcam'], label="Video file", format="mp4", height="300px")
                 video_language = gr.Radio(["Arabic", "English"], label="Video Language")
                 video_task = gr.Radio(["transcribe", "translate"], label="Task")
                 video_timestamp_type = gr.Radio(["sentence", "word"], label="Timestamp Type")
@@ -303,7 +292,7 @@ with gr.Blocks(theme=gr.themes.Default()) as demo:
                 video_transcript_output = gr.Text(label="Transcript")
                 video_timestamp_output = gr.Text(label="Timestamps")
                 video_foul_words = gr.Text(label="Foul Words")
-                output_video = gr.Video(label="Output Video")
+                output_video = gr.Video(label="Output Video", height="300px")
                 # output_video = gr.Audio(label="Output Audio", type="numpy")
                 time_taken = gr.Text(label="Time Taken")
 
