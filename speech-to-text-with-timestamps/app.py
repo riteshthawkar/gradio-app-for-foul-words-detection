@@ -186,16 +186,15 @@ def transcribe_video(input_video, video_language, task, timestamp_type):
 
     final_video = video.set_audio(processed_audio)
 
-    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_final_video_file:
-        final_video.write_videofile(temp_final_video_file.name, codec="h264", audio_codec="aac")
-    
-    # final_video_buffer = io.BytesIO()
-    # final_video.write_videofile(temp_final_video_file.name, codec="libx264", audio_codec="aac")
-
-    # final_video_buffer.seek(0)
     ending_time = timeit.default_timer()
 
-    return [text, timestamps, foul_words, temp_final_video_file.name, str(round(ending_time-starting_time, 2))+" seconds"]
+    # with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_final_video_file:
+        # final_video.write_videofile(temp_final_video_file.name, codec="libx264", audio_codec="aac")
+    final_video_file = "final_processed_Video.mp4"
+    final_video.write_videofile(final_video_file, codec="libx264", audio_codec="aac")
+    
+
+    return [text, timestamps, foul_words, final_video_file, str(round(ending_time-starting_time, 2))+" seconds"]
 
 video_examples = [
         ["video-clips/sample_1.mp4", 'English', 'transcribe', 'word'],
